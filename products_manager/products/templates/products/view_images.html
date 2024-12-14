@@ -1,0 +1,91 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProductsManager</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body background="{% static 'img/i.webp' %}">
+  <div class="container">
+    <h2>{{ title }}</h2>
+      <div class="select-wrapper">
+        <select onchange="window.location.href=this.value;">
+          <option value="">{{ title }}</option>
+          {% for item in products_list %}
+            <option value="/admin/products/tempproduct/{{ item.product_id }}/images/">({{ item.id }}) {{ item.title }}</option>
+          {% endfor %}
+        </select>
+      </div>  
+    <form method="post">
+      {% csrf_token %}
+      <div class="image-container">
+        {% for image in images %}
+          <div class="image-card">
+            <img src="{{ image.file.url }}" alt="{{ image.caption }}" class="image-card-img">
+            <div class="image-settings">
+              <div class="setting-item">
+                <label for="remove_bg_{{ image.id }}">Удалить фон:</label>
+                <input type="checkbox" id="remove_bg_{{ image.id }}" name="remove_bg_{{ image.id }}" {% if image.remove_bg %}checked{% endif %}>
+              </div>
+              <div class="setting-item">
+                <label for="remove_wm_{{ image.id }}">Удалить водяной знак:</label>
+                <input type="checkbox" id="remove_wm_{{ image.id }}" name="remove_wm_{{ image.id }}" {% if image.remove_wm %}checked{% endif %}>
+              </div>
+              <div class="setting-item">
+                <label for="sort_order_{{ image.id }}">Порядковый номер:</label>
+                <input type="number" id="sort_order_{{ image.id }}" name="sort_order_{{ image.id }}" value="{{ image.sort_order }}">
+              </div>
+              <div class="setting-item">
+                <button type="submit" name="delete_image_{{ image.id }}" class="delete-button">Удалить изображение</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="save-changes-button">Сохранить изменения</button>
+    </form>
+    
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <h2>Загрузить новое изображение</h2>
+      {{ form.product }}
+      <div class="input-group">
+        <label for="{{ form.caption.id_for_label }}">Описание</label>
+        {{ form.caption }}
+      </div>
+      
+      <div class="input-group">
+        <label for="{{ form.file.id_for_label }}">Файл</label>
+        {{ form.file }}
+      </div>
+      
+      <div class="input-group">
+        <label for="{{ form.sort_order.id_for_label }}">Порядковый номер</label>
+        {{ form.sort_order }}
+      </div>
+      
+      <div class="input-group">
+        <label for="{{ form.collection_id.id_for_label }}">ID коллекции</label>
+        {{ form.collection_id }}
+      </div>
+    
+      <div class="input-group">
+        <label for="{{ form.remove_wm.id_for_label }}">Удалить водяной знак</label>
+        {{ form.remove_wm }}
+      </div>
+    
+      <div class="input-group">
+        <label for="{{ form.remove_bg.id_for_label }}">Удалить фон</label>
+        {{ form.remove_bg }}
+      </div>
+    
+      <button type="submit">Загрузить изображение</button>
+    </form>
+    
+  </div>
+</body>
+</html>
+
